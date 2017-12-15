@@ -1,9 +1,12 @@
 #基于微信小程序绘图API开发的一套报表显示工具
 ##API
+	
 	var chart = new Chart(options);
 	//画饼图
     chart.drawPie(pieOptions);
+	
 ##options的定义
+	
 	{
 	id:		字符串，必填，canvas的id
 	x:		数值，必填，canvas显示位置的x坐标
@@ -18,7 +21,9 @@
 			]
 		
 	}
+	
 ##pieOptions的定义
+	
 	{
 		r:数值，必填，圆的半径
 	}
