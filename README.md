@@ -11,7 +11,7 @@
 	id:		字符串，必填，canvas的id
 	x:		数值，必填，canvas显示位置的x坐标
 	y:		数值，必填，canvas显示位置的y坐标
-	font:	字符串，必填，canvas中文字的字体大小
+	font:		字符串，必填，canvas中文字的字体大小
 	data:	[
 				{
 					name:	字符串，必填，数据描述
