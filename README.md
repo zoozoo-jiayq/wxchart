@@ -6,6 +6,7 @@
     chart.drawPie(pieOptions);
 
 ##examle
+
 ![](https://github.com/zoozoo-jiayq/wxchart/blob/master/example.png?raw=true)
 	
 ##options的定义
