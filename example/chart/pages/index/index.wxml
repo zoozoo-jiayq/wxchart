@@ -1,3 +1,4 @@
 <view>
-    <canvas canvas-id="myCanvas" style="" />
+    <button bindtap='gopie'>饼图</button>
+    <button bindtap='gobar'>柱状图</button>
 </view>

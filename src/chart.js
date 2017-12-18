@@ -14,17 +14,24 @@
     }
     //画圆用到的初始化
     Chart.prototype._initPie = function () {
+        AssertTrue(this.options.r,"半径r不能为空");
         //画圆按照逆时针画
         this.angle = 0;//0~2*PI,从3点方向开始顺时针方向增加
         this.at = 0;//0~360，从3点钟方向顺时针增加
         this.pointerAt = 0;//指针位置在当前饼图的中间位置
     }
-
+    /*
+        画饼图:
+        params定义:
+        {
+            r:xx
+        }
+    */
     Chart.prototype.drawPie = function (params) {
         Merge(this.options, params);
+        this._beforeDraw();
         this._initPie();
         var options = this.options;
-        this._beforeDraw(options);
         var colorIndex = 0;
         this.data.forEach(d => {
             this.ctx.beginPath();
@@ -75,11 +82,103 @@
         this._afterDraw();
     }
 
-    Chart.prototype._beforeDraw = function (options) {
+    //柱状图初始化
+    Chart.prototype._initBar = function(){
+        AssertTrue(this.options.size,"size属性不能为空");
+        AssertTrue(this.options.xAxis,"x轴定义不能为空");
+        AssertTrue(this.options.yAxis,"y轴定义不能为空");
+        AssertTrue(this.options.yAxis.cursors,"y轴指标数量不能为空");
+        //柱子的最宽宽度为30px;
+        this.options.xAxis.maxWidth = 30;
+        //x轴每一格的宽度,单位是px
+        this.options.xAxis.cursorStep = Math.floor(this.options.size.width/this.options.xAxis.data.length);
+        var _data = this.options.data.slice();
+        _data.sort((a,b)=>b.value-a.value);
+        var maxValue = _data[0].value;
+        //y轴每一格的高度，单位是px
+        this.options.yAxis.cursorStep = Math.floor(this.options.size.height/this.options.yAxis.cursors);
+        //y轴指标精度
+        this.options.yAxis.precise = Math.ceil(maxValue/this.options.yAxis.cursors);
+    }
+
+    /*
+        画柱状图
+        options定义
+        {
+            size:{
+                width:xx,
+                height:xxx
+            },
+            xAxis:{
+                data:["1月","2月",...]
+            },
+            yAxis:{
+                cursors:3
+            }
+        }
+    */
+    Chart.prototype.drawBar = function(params){
+        Merge(this.options,params);
+        this._beforeDraw();
+        this._initBar();
+        //先画x轴
+        this.ctx.moveTo(this.options.x,this.options.y);
+        this.ctx.lineTo(this.options.x+this.options.size.width,this.options.y);
+        this.ctx.stroke();
+        this.options.xAxis.start = this.options.xAxis.cursorStep/2 ;//x轴节点的相对位置
+        this.xpoints = new Array();//x轴上的节点 
+        this.options.xAxis.data.forEach(d=>{
+            this.xpoints.push(this.options.x+this.options.xAxis.start);
+            this.ctx.moveTo(this.options.x+this.options.xAxis.start,this.options.y);
+            this.ctx.lineTo(this.options.x+this.options.xAxis.start,this.options.y+5);
+            this.ctx.stroke();
+            this.ctx.setTextAlign("center");
+            this.ctx.setTextBaseline("bottom");
+            this.ctx.setFontSize(this.options.font);
+            this.ctx.fillText(d,this.options.x+this.options.xAxis.start,this.options.y+15);
+            this.options.xAxis.start += this.options.xAxis.cursorStep;
+        })
+        //画Y轴
+        this.ctx.moveTo(this.options.x,this.options.y);
+        this.ctx.lineTo(this.options.x,this.options.y-this.options.size.height);
+        this.ctx.stroke();
+        for(var i=1; i<=this.options.yAxis.cursors; i++){
+            this.ctx.moveTo(this.options.x,this.options.y-this.options.yAxis.cursorStep*i);
+            this.ctx.lineTo(this.options.x-5,this.options.y-this.options.yAxis.cursorStep*i); 
+            this.ctx.stroke();
+            this.ctx.setTextAlign("left");
+            this.ctx.setTextBaseline("center");
+            this.ctx.setFontSize(this.options.font);
+            this.ctx.fillText(this.options.yAxis.precise*i,this.options.x-35,this.options.y-this.options.yAxis.cursorStep*i);
+        }
+        //画柱子
+        console.log(this.xpoints);
+        var barw = this.options.xAxis.cursorStep/2;
+        if(barw>this.options.xAxis.maxWidth){
+            barw = this.options.xAxis.maxWidth;
+        }
+        for(var i=0; i<this.xpoints.length; i++){
+            var p = this.xpoints[i];
+            this.ctx.moveTo(p+barw/2,this.options.y);
+            var h = this.options.data[i].value*this.options.size.height/(this.options.yAxis.precise*this.options.yAxis.cursors);
+            this.ctx.lineTo(p+barw/2,this.options.y-h);
+            this.ctx.lineTo(p-barw/2,this.options.y-h);
+            this.ctx.lineTo(p-barw/2,this.options.y);
+            this.ctx.setFillStyle("#3398DB");
+            this.ctx.fill();
+        }
+
+
+        this._afterDraw();
+    }
+
+
+    Chart.prototype._beforeDraw = function () {
+        var options = this.options;
         options.x ? options.x : options.x = 0;
         options.y ? options.y : options.y = 0;
-        AssertTrue(options.id);
-        AssertTrue(options.data);
+        AssertTrue(options.id,"id属性不能为空");
+        AssertTrue(options.data,"data属性不能为空");
         this.ctx = wx.createCanvasContext(options.id);
         var data = options.data;
         var sum = data.reduce((s, t) => s += t.value, 0);
@@ -93,9 +192,9 @@
         this.ctx.draw();
     }
 
-    function AssertTrue(express) {
+    function AssertTrue(express,desc) {
         if (!express) {
-            console.error("chart.js:Assert false:" + express);
+            console.error("chart.js:Assert false:" + desc);
             return;
         }
     }
