@@ -7,11 +7,15 @@
 	//画柱状图
 	var bar = new Chart(options);
 	bar.drawBar(barOptions);
+	//画散点图
+	var scatter = new Chart(options);
+	scatter.drawScatter(scatterOptions);
 
 ##examle
 
 ![](https://github.com/zoozoo-jiayq/wxchart/blob/master/pie.png?raw=true)
 ![](https://github.com/zoozoo-jiayq/wxchart/blob/master/bar.png?raw=true)
+![](https://github.com/zoozoo-jiayq/wxchart/blob/master/scatter.png?raw=true)
 	
 ##options的定义
 	
