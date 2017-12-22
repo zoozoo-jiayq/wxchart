@@ -3,7 +3,8 @@
         "pages/index/index",
         "pages/pie/pie",
         "pages/logs/logs",
-        "pages/bar/bar"
+        "pages/bar/bar",
+        "pages/scatter/scatter"
     ],
     "window": {
         "backgroundTextStyle": "light",

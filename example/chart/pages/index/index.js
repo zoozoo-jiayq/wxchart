@@ -18,5 +18,10 @@ Page({
         wx.navigateTo({
             url: '/pages/bar/bar',
         })
+    },
+    goscatter(){
+        wx.navigateTo({
+            url: '/pages/scatter/scatter',
+        })
     }
 })

@@ -1,4 +1,5 @@
 <view>
     <button bindtap='gopie'>饼图</button>
     <button bindtap='gobar'>柱状图</button>
+    <button bindtap='goscatter'>散点图</button>
 </view>
